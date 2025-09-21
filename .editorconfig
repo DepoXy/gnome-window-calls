@@ -1,0 +1,43 @@
+# vim:tw=0:ts=2:sw=2:et:norl:ft=toml
+# Author: Landon Bouma <https://tallybark.com/>
+# Project: https://github.com/DepoXy/gnome-window-calls#🪟
+# License: MIT. Please find more in the LICENSE file.
+
+# REFER:
+# http://editorconfig.org
+
+root = true
+
+[*]
+indent_style = space
+indent_size = 2
+trim_trailing_whitespace = true
+insert_final_newline = true
+charset = utf-8
+end_of_line = lf
+
+[LICENSE]
+insert_final_newline = false
+
+# REFER: See shfmt options:
+#   https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#parser-flags
+# -i/--indent Indent      0 for tabs (default), >0 for number of spaces.
+# -ln/--language-variant  Language dialect (bash/posix/mksh/bats, default auto).
+# -bn/--binary-next-line  Binary ops like && and | may start a line.
+# -ci/--case-indent       Switch cases will be indented.
+# -sr/--space-redirects   Redirect operators will be followed by a space.
+# -kp/--keep-padding      Keep column alignment paddings (deprecated?).
+# -fn/--func-next-line    Function opening braces are placed on a separate line.
+#
+# DUNNO: Using shfmt-specific [[bash]] or [[sh]] doesn't work here
+#        (though works in DepoXy .editorconfig).
+#   https://github.com/mvdan/sh/blob/master/cmd/shfmt/shfmt.1.scd#examples
+[*]
+# like -i=2
+indent_style = space
+indent_size = 2
+#  # Leave shell_variant = auto, which will key off modeline.
+#  shell_variant = posix
+binary_next_line = true
+switch_case_indent = true
+space_redirects = true
