@@ -336,4 +336,4 @@ alert_missing_gnome_extension_window_calls() {
   >&2 echo "  https://github.com/ickyicky/window-calls"
 }
 
-# ***
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
