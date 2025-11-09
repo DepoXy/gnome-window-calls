@@ -186,7 +186,8 @@ get_window_ids_Wayland_filtered() {
     echo "${windows_list_json}" \
       | jq ".[] | ${jq_filter} ${jq_filter:+|} .id"
   )"; then
-    # DEVEL: Run again with RAISELOWER_TRACE_DIR=. to debug.
+
+    # DEVEL: Run with RAISELOWER_TRACE_DIR=. to debug.
     >&2 echo "ERROR: Cannot determine windows ID(s) (from window-calls)"
     if [ -n "${RAISELOWER_TRACE_DIR}" ]; then
       echo -e "\njq_filter: ${jq_filter}" >> "${RAISELOWER_TRACE_DIR}/03--windows_list_json"
