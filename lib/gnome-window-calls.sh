@@ -153,38 +153,54 @@ get_window_ids_Wayland_filtered() {
   )"
 
   if [ -n "${RAISELOWER_TRACE_DIR}" ]; then
-    echo "${windows_list_blob}" \
-      > "${RAISELOWER_TRACE_DIR}/02--windows_list_blob--$(
-        ${is_double_quoted} && echo "double" || echo "single"
-      )"
+    local blobby
+    blobby="${RAISELOWER_TRACE_DIR}/02--windows_list_blob--$(
+      ${is_double_quoted} && echo "double" || echo "single"
+    )"
+
+    echo "${windows_list_blob}" > "${blobby}"
   fi
 
   # ***
 
-  local windows_list_json
-  if ${is_double_quoted}; then
-    windows_list_json="$(
-      echo "${windows_list_blob}" \
-        | sed -e 's/\\\(\\\)\+"//g' \
-        | sed -e 's/\\"/"/g'
-    )"
-  elif ${is_single_quoted}; then
-    windows_list_json="$(
-      echo "${windows_list_blob}" \
-        | sed -e 's/\(\\\)\+"//g'
-    )"
-  fi
-
-  if [ -n "${RAISELOWER_TRACE_DIR}" ]; then
-    echo "${windows_list_json}" > "${RAISELOWER_TRACE_DIR}/03--windows_list_json"
-  fi
-
-  # ***
+  # BWARE: Initially, this used an intermediate variable:
+  #   local windows_list_json
+  #   if ${is_double_quoted}; then
+  #     windows_list_json="$(
+  #       echo "${windows_list_blob}" \
+  #         | sed -e 's/\\\(\\\)\+"//g' \
+  #         | sed -e 's/\\"/"/g'
+  #     )"
+  #   elif ${is_single_quoted}; then
+  #     windows_list_json="$(
+  #       echo "${windows_list_blob}" \
+  #         | sed -e 's/\(\\\)\+"//g'
+  #     )"
+  #   fi
+  # but then properly-escaped values are themselves un-escaped
+  # (and then, e.g.,
+  #   ~/.depoxy/ambers/bin/windows/toggle-numbered 3
+  #   # Or, more explicitly:
+  #   ~/.depoxy/ambers/bin/windows/toggle-visibility "^3\." "^3․"
+  # fails).
+  # - I couldn't quite suss the issue (e.g., I'd see different output
+  #   if I added a trace `echo` and compared it to a trace `cat >` file).
+  #   - It seemed like either `echo "${windows_list_json}" | ...` or
+  #     `echo "${windows_list_blob}" | ...` was removing escape chars.
+  #   - Fortunately, single-shotting in a pipeline avoids the problem.
 
   local window_ids
   if ! window_ids="$(
-    echo "${windows_list_json}" \
-      | jq ".[] | ${jq_filter} ${jq_filter:+|} .id"
+    if ${is_double_quoted}; then
+      echo "${windows_list_blob}" \
+        | sed -e 's/\\\(\\\)\+"//g' \
+        | sed -e 's/\\"/"/g' \
+        | jq ".[] | ${jq_filter} ${jq_filter:+|} .id"
+    elif ${is_single_quoted}; then
+      echo "${windows_list_blob}" \
+        | sed -e 's/\(\\\)\+"//g' \
+        | jq ".[] | ${jq_filter} ${jq_filter:+|} .id"
+    fi
   )"; then
 
     # DEVEL: Run with RAISELOWER_TRACE_DIR=. to debug.
