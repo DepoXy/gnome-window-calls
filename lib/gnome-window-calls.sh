@@ -384,6 +384,13 @@ raise_all_Wayland_classed() {
   raise_or_lower_all_Wayland_classed "${wm_class}" "window_unminimize" "Unminimized"
 }
 
+# args: wm_class value to match.
+lower_all_Wayland_classed() {
+  local wm_class="$1"
+
+  raise_or_lower_all_Wayland_classed "${wm_class}" "window_minimize" "Minimized"
+}
+
 raise_or_lower_all_Wayland_classed() {
   local wm_class="$1"
   local window_action="$2"
