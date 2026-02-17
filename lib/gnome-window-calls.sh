@@ -80,6 +80,11 @@ window_minimize() {
   window_calls_call "${window_id}" "Minimize"
 }
 
+window_unminimize() {
+  local window_id="$1"
+
+  window_calls_call "${window_id}" "Unminimize"
+}
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 
 get_window_ids_Wayland() {
@@ -368,6 +373,49 @@ raise_window_Wayland_titled() {
 
     return 1
   fi
+}
+
+# +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
+
+# args: wm_class value to match.
+raise_all_Wayland_classed() {
+  local wm_class="$1"
+
+  if [ -z "${wm_class}" ]; then
+    >&2 echo "ERROR: Please specify the window class to match"
+
+    return 1
+
+  fi
+
+  local window_ids
+
+  local found_wm_class=false
+  local jq_filter="select(.wm_class == \"${wm_class}\")"
+  if window_ids="$(get_window_ids_Wayland_filtered "${jq_filter}")"; then
+    if [ -n "${window_ids}" ]; then
+      found_wm_class=true
+    fi
+  fi
+
+  if ! ${found_wm_class}; then
+    >&2 echo "No windows found for the specified class: ${wm_class}"
+
+    # Meh, doesn't seem like an error if nothing found, technically
+    # raised all windows, it's just that there weren't any windows.
+    return 0
+  fi
+
+  # ***
+
+  export -f window_unminimize
+  export -f window_calls_call
+  # Prints "()" on stdout for each window.
+  local resp
+  resp="$(
+    echo "${window_ids}" | xargs -I{} bash -c 'window_unminimize "{}"'
+  )"
+  echo "Unminimized $(echo "${resp}" | wc -l) window(s)"
 }
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
