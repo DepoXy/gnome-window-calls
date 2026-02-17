@@ -31,31 +31,32 @@ print_window_list() {
     --method org.gnome.Shell.Extensions.Windows.List
 }
 
-print_window_details() {
+window_calls_call() {
   local window_id="$1"
+  local window_action="$2"
 
   gdbus call --session --dest org.gnome.Shell \
     --object-path /org/gnome/Shell/Extensions/Windows \
-    --method org.gnome.Shell.Extensions.Windows.Details \
+    --method org.gnome.Shell.Extensions.Windows.${window_action} \
     "${window_id}"
+}
+
+print_window_details() {
+  local window_id="$1"
+
+  window_calls_call "${window_id}" "Details"
 }
 
 window_activate() {
   local window_id="$1"
 
-  gdbus call --session --dest org.gnome.Shell \
-    --object-path /org/gnome/Shell/Extensions/Windows \
-    --method org.gnome.Shell.Extensions.Windows.Activate \
-    -- "${window_id}"
+  window_calls_call "${window_id}" "Activate"
 }
 
 window_minimize() {
   local window_id="$1"
 
-  gdbus call --session --dest org.gnome.Shell \
-    --object-path /org/gnome/Shell/Extensions/Windows \
-    --method org.gnome.Shell.Extensions.Windows.Minimize \
-    -- "${window_id}"
+  window_calls_call "${window_id}" "Minimize"
 }
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
@@ -260,6 +261,7 @@ raise_window_Wayland_titled() {
   # differently, perhaps you could pipe to a while loop, e.g.:
   #
   #   export -f print_window_details
+  #   export -f window_calls_call
   #   echo "${window_ids}" \
   #     | xargs -I{} bash -c 'print_window_details "{}"' 2> /dev/null \
   #     | gawk 'match($0, /\{.*\}/, a) {print a[0]}' \
@@ -275,6 +277,7 @@ raise_window_Wayland_titled() {
   # - USYNC: See similar pipeline in downstream app:
   #   ~/.kit/sh/sh-humble-prompt/lib/show-command-name-in-window-title.sh
   export -f print_window_details
+  export -f window_calls_call
   local window_details
   window_details="$(
     echo "${window_ids}" \
