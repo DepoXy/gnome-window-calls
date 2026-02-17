@@ -381,6 +381,14 @@ raise_window_Wayland_titled() {
 raise_all_Wayland_classed() {
   local wm_class="$1"
 
+  raise_or_lower_all_Wayland_classed "${wm_class}" "window_unminimize" "Unminimized"
+}
+
+raise_or_lower_all_Wayland_classed() {
+  local wm_class="$1"
+  local window_action="$2"
+  local friendly_action="$3"
+
   if [ -z "${wm_class}" ]; then
     >&2 echo "ERROR: Please specify the window class to match"
 
@@ -408,14 +416,14 @@ raise_all_Wayland_classed() {
 
   # ***
 
-  export -f window_unminimize
+  export -f ${window_action}
   export -f window_calls_call
   # Prints "()" on stdout for each window.
   local resp
   resp="$(
-    echo "${window_ids}" | xargs -I{} bash -c 'window_unminimize "{}"'
+    echo "${window_ids}" | xargs -I{} bash -c "${window_action} \"{}\""
   )"
-  echo "Unminimized $(echo "${resp}" | wc -l) window(s)"
+  echo "${friendly_action} $(echo "${resp}" | wc -l) window(s)"
 }
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
