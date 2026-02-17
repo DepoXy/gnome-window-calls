@@ -25,6 +25,27 @@
 
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ #
 
+# Window Calls supports the following actions:
+#
+# - org.gnome.Shell.Extensions.Windows.List
+#
+# - org.gnome.Shell.Extensions.Windows.MoveToWorkspace
+#
+# - org.gnome.Shell.Extensions.Windows.Details
+# - org.gnome.Shell.Extensions.Windows.GetTitle
+# - org.gnome.Shell.Extensions.Windows.GetFrameBounds
+#
+# - org.gnome.Shell.Extensions.Windows.Resize
+# - org.gnome.Shell.Extensions.Windows.MoveResize
+# - org.gnome.Shell.Extensions.Windows.Move
+#
+# - org.gnome.Shell.Extensions.Windows.Maximize
+# - org.gnome.Shell.Extensions.Windows.Minimize
+# - org.gnome.Shell.Extensions.Windows.Unmaximize
+# - org.gnome.Shell.Extensions.Windows.Unminimize
+# - org.gnome.Shell.Extensions.Windows.Activate
+# - org.gnome.Shell.Extensions.Windows.Close
+
 print_window_list() {
   gdbus call --session --dest org.gnome.Shell \
     --object-path /org/gnome/Shell/Extensions/Windows \
