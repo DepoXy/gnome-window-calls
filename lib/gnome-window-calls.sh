@@ -387,14 +387,16 @@ raise_all_Wayland_classed() {
 # args: wm_class value to match.
 lower_all_Wayland_classed() {
   local wm_class="$1"
+  local keep_focused="${2:-false}"
 
-  raise_or_lower_all_Wayland_classed "${wm_class}" "window_minimize" "Minimized"
+  raise_or_lower_all_Wayland_classed "${wm_class}" "window_minimize" "Minimized" "${keep_focused}"
 }
 
 raise_or_lower_all_Wayland_classed() {
   local wm_class="$1"
   local window_action="$2"
   local friendly_action="$3"
+  local keep_focused="$4"
 
   # ***
 
@@ -417,6 +419,13 @@ raise_or_lower_all_Wayland_classed() {
     condits=".wm_class == \"${wm_class}\""
   fi
 
+  if ${keep_focused}; then
+    if [ -n "${condits}" ]; then
+      condits="${condits} and "
+    fi
+    condits="${condits}.focus == false"
+  fi
+
   # Use identify filter if no conditions.
   local jq_filter="."
   if [ -n "${condits}" ]; then
@@ -433,13 +442,17 @@ raise_or_lower_all_Wayland_classed() {
 
     # Outputing jq filter is more dev-friendly than user-friendly, so not this:
     #   >&2 echo "No windows found for the specified filter: ${jq_filter}"
+    local unfocused=""
+    if ${keep_focused}; then
+      unfocused="unfocused "
+    fi
     if [ -n "${wm_class}" ]; then
-      >&2 echo "No windows found for window class '${wm_class}'"
+      >&2 echo "No ${unfocused}windows found for window class '${wm_class}'"
     else
       # Dunno: This path even possible? Maybe if you wire this fcn. to a
       # desktop environment keyboard accelerator, but then you won't see
       # the output, anyway.
-      >&2 echo "No windows found"
+      >&2 echo "No ${unfocused}windows found"
     fi
 
     # Meh, doesn't seem like an error if nothing found, technically
