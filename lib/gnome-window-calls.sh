@@ -246,6 +246,8 @@ get_window_ids_Wayland_filtered() {
 
 # args: one or more window title(s) to try to match.
 raise_window_Wayland_titled() {
+  local app_id_or_first_pattern="$1"
+
   if [ $# -eq 0 ]; then
     >&2 echo "ERROR: Please specify one or more window titles to match"
 
@@ -262,7 +264,7 @@ raise_window_Wayland_titled() {
   local found_wm_class=false
   if [ $# -eq 1 ]; then
     # SAVVY: Despite its name, the JSON 'wm_class' is a Wayland 'app_id'.
-    local jq_filter="select(.wm_class == \"$1\")"
+    local jq_filter="select(.wm_class == \"${app_id_or_first_pattern}\")"
     if window_ids="$(get_window_ids_Wayland_filtered "${jq_filter}")"; then
       if [ -n "${window_ids}" ]; then
         found_wm_class=true
