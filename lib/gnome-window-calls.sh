@@ -273,7 +273,16 @@ raise_window_Wayland_titled() {
   fi
 
   if ! ${found_wm_class}; then
-    if ! window_ids="$(get_window_ids_Wayland)"; then
+    # SPIKE/2026-10-19: This lib. evolved funnily, and environs have been
+    # used to easily address feature creep, such as here.
+    # - USAGE: Set 'RAISELOWER_STRICTLY_APPID=true' to use single arg as
+    #   App ID only, and not as a window title pattern to seek.
+    # - SPIKE: But should this be CLI option instead/too?
+    if ${RAISELOWER_STRICTLY_APPID:-false}; then
+      >&2 echo "ALERT: No matching window identified for App ID: ${app_id_or_first_pattern}"
+
+      return 1
+    elif ! window_ids="$(get_window_ids_Wayland)"; then
 
       return 1
     fi
