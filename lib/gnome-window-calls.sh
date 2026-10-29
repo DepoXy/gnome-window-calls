@@ -379,6 +379,10 @@ activate_windows_for_application() {
 
     activate_window_by_window_id "${window_id}"
     was_raised=true
+
+    if ! ${RAISELOWER_RAISE_ALL_WINDOWS:-false}; then
+      break
+    fi
   done <<< "${titles_and_ids}"
 
   ${was_raised}
@@ -411,8 +415,20 @@ activate_windows_by_pattern_match() {
         window_id="$(echo "${title_and_id}" | sed 's/.*\t//')"
         if [ -n "${window_id}" ]; then
           window_ids+=("${window_id}")
+
+          # HSTRY/2026-10-28: New opt-in raise-all (fully untested =).
+          # - MAYBE: We might need to adjust how 'lower' works w/ this,
+          #   e.g., might raise all app windows than lower topmost if
+          #   it was previously also topmost.
+          if ! ${RAISELOWER_RAISE_ALL_WINDOWS:-false}; then
+            break
+          fi
         fi
       done <<< "${matching_titles_and_ids}"
+
+      if ! ${RAISELOWER_RAISE_ALL_WINDOWS:-false}; then
+        break
+      fi
     fi
   done
 
