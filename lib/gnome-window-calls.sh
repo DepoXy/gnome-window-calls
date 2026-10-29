@@ -331,8 +331,8 @@ raise_window_Wayland_titled() {
 
   # ***
 
-  local title_and_ids
-  title_and_ids="$(
+  local titles_and_ids
+  titles_and_ids="$(
     printf "%s" "${window_details}" \
       | jq -r '"\(.title)\t\(.id)"' \
         2>&1
@@ -349,16 +349,16 @@ raise_window_Wayland_titled() {
   fi
 
   if [ -n "${RAISELOWER_TRACE_DIR}" ]; then
-    echo "${title_and_ids}" > "${RAISELOWER_TRACE_DIR}/05--title_and_ids"
+    echo "${titles_and_ids}" > "${RAISELOWER_TRACE_DIR}/05--titles_and_ids"
   fi
 
   # ***
 
   if ! (
     if ${found_wm_class}; then
-      activate_windows_for_application "${title_and_ids}"
+      activate_windows_for_application "${titles_and_ids}"
     else
-      activate_windows_by_pattern_match "${title_and_ids}" "$@"
+      activate_windows_by_pattern_match "${titles_and_ids}" "$@"
     fi
   ); then
     >&2 echo "ALERT: No matching window(s) identified for: $@"
@@ -450,7 +450,7 @@ activate_window_by_window_id() {
   window_activate "${window_id}" > /dev/null
 
   if [ -n "${RAISELOWER_TRACE_DIR}" ]; then
-    echo -e "\nwindow_id: ${window_id}" >> "${RAISELOWER_TRACE_DIR}/05--title_and_ids"
+    echo -e "\nwindow_id: ${window_id}" >> "${RAISELOWER_TRACE_DIR}/05--titles_and_ids"
   fi
 }
 
